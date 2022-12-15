@@ -4,41 +4,41 @@
 #include <tuple>
 using namespace std;
 
-class cParts {
+vector <int> nPrevNumbers;
+
+class cCarParts {
 public:
-	string *sEngine;
-	bool *bTouchscreen;
-	int *nWheelSize;
-	int *nAirBags;
-
-	cParts(string sEngine, bool bTouchscreen, int nWheelSize, int nAirBags) {
-		this->sEngine = new string;
-		this->bTouchscreen = new bool;
-		this->nWheelSize = new int;
-		this->nAirBags = new int;
-
-		*this->sEngine = sEngine;
-		*this->bTouchscreen = bTouchscreen;
-		*this->nWheelSize = nWheelSize;
-		*this->nAirBags = nAirBags;
+	string sEngine;
+	int nBattaryVolt;
+	bool bTouchscreen;
+	int nWheelSize;
+	int nAirBags;
+	
+	cCarParts(string sEngine, int nBattaryVolt, bool bTouchscreen, int nWheelSize, int nAirBags) { //constructor
+		this->sEngine = sEngine;
+		this->nBattaryVolt = nBattaryVolt;
+		this->bTouchscreen = bTouchscreen;
+		this->nWheelSize = nWheelSize;
+		this->nAirBags = nAirBags;
 	}
-	cParts(const cParts &p) {
-		sEngine = new string(*p.sEngine);
-		bTouchscreen = new bool(*p.bTouchscreen);
-		nWheelSize = new int(*p.nWheelSize);
-		nAirBags = new int(*p.nAirBags);
+
+	string sGetEngine() {
+		return sEngine;
 	}
-	~cParts()
-	{
-		delete sEngine;
-		delete bTouchscreen;
-		delete nWheelSize;
-		delete nAirBags;
+
+	int nGetWheelSize() {
+
+		return nWheelSize;
+	}
+
+	int nSetNewWheelSize(int nNewWheelSize) {
+
+		this->nWheelSize = nNewWheelSize;
 	}
 };
 
 
-class cCar {
+class cCar :public cCarParts{
 private:
 	string sModel;
 	int nCarNumber;
@@ -46,31 +46,30 @@ private:
 	int year;
 	string sLeaseDate;
 	string sReturnDate;
-	vector <string> sPrevNumbers;
-	int BNumberValidation(int nRandNum) {
-		if (sPrevNumbers.size() == 10) {
-			cout << "The capasity has been reached\n";
-		}
-		for (int i=0; i==sPrevNumbers.size()-1; i++) {
-			if (sPrevNumbers[i]== to_string(nRandNum))
-			{
+	bool tuned = false;
+	
+	int BNumberValidation(int temp) {
+	
+		for (int i : nPrevNumbers) {
+			if (temp == i)
 				return false;
-			}
-			return true;
 		}
+		nPrevNumbers.push_back(temp);
+		return true;
 	}
 
 	int nCarNumGen() {
-		int temp = rand() % 10;
+		int temp = rand() % 1000;
 		if (BNumberValidation(temp)) {
-			sPrevNumbers.push_back(to_string(temp));
 			return temp;
 		}
-		nCarNumGen();
+		return nCarNumGen();
 	}
+
 public:
-	cCar(string sModel, string sLeaseDate,string sReturnDate, bool bAvailable, int year){
-		cout << "The constructur was called\n";
+	
+	cCar(string sModel, string sLeaseDate,string sReturnDate, bool bAvailable, int year):cCarParts(sEngine, nBattaryVolt, bTouchscreen, nWheelSize, nAirBags) {
+		
 		this->sModel = sModel;
 		this->nCarNumber = nCarNumGen();
 		this->sLeaseDate = sLeaseDate;
@@ -93,13 +92,16 @@ public:
 	}
 	void vShowAllInfo() {
 		cout << sModel << "\n" << aGetCarAvailabilty() << "\n" << aGetCarNumber() << "\n" << vPrintDates() << "\n" << year << "\n";
-		cout << "*******************************************\n*******************************************";
+		cout << "*******************************************\n*******************************************\n";
 	}
-
+	bool bGotTuned() {
+		return tuned;
+	}
 
 };
 
 int main() {
+
 	cCar car1("Lada", "1/12/22", "19/12/23", true, 1996);
 	cCar car2("aff", "3/12/22", "12/12/23", false, 1994);
 	cCar car3("Lhha", "7/12/22", "16/12/23", true, 1992);
