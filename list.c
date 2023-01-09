@@ -62,6 +62,39 @@ Node* insert_at_middle(Node* head, int new_value, int location) {
 		return head;
 	}
 }
+Node* delete_at_head(Node* head)
+{
+	if (is_empty(&head)) return NULL;
+	else
+	{
+		Node* to_return = head->next;
+		free(head);
+		return to_return;
+	}
+}
+
+Node* delete_at_tail(Node* head)
+{
+	if (is_empty(&head)) return NULL;
+	else if(head->next ==NULL)
+	{
+		free(head);
+		return NULL;
+	}
+	else {
+		Node* current = head;
+		Node* prev = NULL;
+
+		while (current->next != NULL) {
+			prev = current;
+			current = current->next;
+		}
+		
+		prev->next = NULL;
+		free(current);
+		return head;
+	}
+}
 
 void freeList(Node* head)
 {
@@ -87,7 +120,9 @@ int main() {
 	list1_head = insert_at_tail(list1_head, 44);
 	print_list(list1_head);
 
-	insert_at_middle(list1_head, 66, 2);
+	list1_head = insert_at_middle(list1_head, 66, 2);
+	list1_head = delete_at_head(list1_head);
+	list1_head = delete_at_tail(list1_head);
 	print_list(list1_head);
 
 	freeList(list1_head);
