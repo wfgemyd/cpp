@@ -96,6 +96,21 @@ Node* delete_at_tail(Node* head)
 	}
 }
 
+int length(Node* head) {
+	if (head == NULL) {
+		return 0;
+	}
+	else {
+		return 1 + length(head->next);
+	}
+}
+
+bool is_member(Node* head, int find_val) {
+	if (head == NULL)return false;
+	else if (head->value == find_val)return true;
+	else return is_member(head->next, find_val);
+}
+
 void freeList(Node* head)
 {
 	Node* tmp;
@@ -122,9 +137,12 @@ int main() {
 
 	list1_head = insert_at_middle(list1_head, 66, 2);
 	list1_head = delete_at_head(list1_head);
-	list1_head = delete_at_tail(list1_head);
+	
 	print_list(list1_head);
+	printf("The length of the list is: %d \n",length(list1_head));
 
+	if (is_member(list1_head, 7)) printf("it is in the list");
+	else printf("not here");
 	freeList(list1_head);
 	/*
 	Node a, b, c;
