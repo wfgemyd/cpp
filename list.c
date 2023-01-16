@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
-
+#include <time.h>
 typedef struct node {
 	int value;
 	struct node* next; //pointer to the next node
@@ -151,6 +151,34 @@ Node* delete_all_matches(Node* head, int delete_value,
 	return current;
 }
 
+Node* efficent_delete_match(Node* head, int delete_value,
+	int* num_deleted) {
+	*num_deleted = 0;
+	if (head == NULL)return NULL;
+	
+	Node* current, *temp, *new_head;
+	current = head;
+	while (current->value == delete_value) {
+		temp = current;
+		current = current->next;
+		free(temp);
+		*num_deleted = *num_deleted + 1;
+		if (current == NULL) return NULL;
+	}
+	new_head = current;
+	while (current->next != NULL) {
+		if (current->next->value == delete_value) {
+			temp = current->next;
+			current->next = current->next->next;
+			free(temp);
+			*num_deleted = *num_deleted + 1;
+		}
+		else current = current->next;
+	}
+	return new_head;
+
+}
+
 int length(Node* head) {
 	if (head == NULL) {
 		return 0;
@@ -184,6 +212,31 @@ void replace_matches(Node* head, int find_value, int replace_value)
 	}
 }
 
+Node* append_list(Node* head1, Node* head2) {
+	if (head1 == NULL) return head2;
+
+	Node* current = head1;
+	while (current->next != NULL) current = current->next;
+	current->next = head2;
+	return head1;
+}
+
+Node* reverse_list(Node* head) {
+	if (head == NULL) return NULL;
+	if (head->next == NULL) return head;
+
+	Node* current = head;
+	Node* next_node = head->next;
+	current->next = NULL;
+
+	while (next_node != NULL) {
+		Node* tmp = next_node->next;
+		next_node->next = current;
+		current = next_node;
+		next_node = tmp;
+	}
+	return current;
+}
 
 void freeList(Node* head)
 {
@@ -227,7 +280,52 @@ int main() {
 	
 	print_list(list1_head);
 
-	freeList(list1_head);
+	//______________________________________
+
+	Node* list2_head = NULL;
+	int num_deleted = 0;
+	list2_head = insert_at_head(list2_head, 7);
+	list2_head = insert_at_head(list2_head, 4);
+	list2_head = insert_at_head(list2_head, 2);
+	list2_head = insert_at_head(list2_head, 7);
+	list2_head = insert_at_head(list2_head, 7);
+	list2_head = insert_at_head(list2_head, 6);
+	list2_head = insert_at_head(list2_head, 7);
+	print_list(list2_head);
+
+	list2_head = efficent_delete_match(list2_head, 7, &num_deleted);
+
+	print_list(list2_head);
+
+	//____________________________ preformance test
+	Node* list_test = NULL, *list_test2 = NULL;
+	for (int i = 0; i < 50000; i++)
+		list_test = insert_at_head(list_test, i % 10);
+	for (int i = 0; i < 50000; i++)
+		list_test2 = insert_at_head(list_test2, i % 10);
+	clock_t tic, toc;
+	tic = clock();
+	list_test = delete_all_matches(list_test, 4, &num_deleted);
+	toc = clock();
+	printf("delete_all_matches:%fs\n",
+		(double)(toc - tic) / CLOCKS_PER_SEC);
+	printf("elements deleted: %d\n", num_deleted);
+
+	tic = clock();
+	list_test2 = efficent_delete_match(list_test2, 4, &num_deleted);
+	toc = clock();
+	printf("efficent_delete_match:%fs\n",
+		(double)(toc - tic) / CLOCKS_PER_SEC);
+	printf("elements deleted: %d\n", num_deleted);
+	freeList(list_test);
+	freeList(list_test2);
+
+	//__________________________
+	printf("\n\n\n\n");
+	print_list(list1_head); print_list(list2_head);
+	list1_head = append_list(list1_head, list2_head);
+	print_list(list1_head);
+
 	/*
 	Node a, b, c;
 	a.value = 5;
