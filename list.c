@@ -222,18 +222,18 @@ Node* append_list(Node* head1, Node* head2) {
 }
 
 Node* reverse_list(Node* head) {
-	if (head == NULL) return NULL;
+	if (head == NULL)return NULL;
 	if (head->next == NULL) return head;
 
 	Node* current = head;
 	Node* next_node = head->next;
-	current->next = NULL;
 
+	current->next = NULL;
 	while (next_node != NULL) {
-		Node* tmp = next_node->next;
+		Node* temp = next_node->next;
 		next_node->next = current;
 		current = next_node;
-		next_node = tmp;
+		next_node = temp;
 	}
 	return current;
 }
@@ -324,8 +324,8 @@ int main() {
 	printf("\n\n\n\n");
 	print_list(list1_head); print_list(list2_head);
 	list1_head = append_list(list1_head, list2_head);
+	list1_head=reverse_list(list1_head);
 	print_list(list1_head);
-
 	/*
 	Node a, b, c;
 	a.value = 5;
