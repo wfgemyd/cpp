@@ -238,6 +238,55 @@ Node* reverse_list(Node* head) {
 	return current;
 }
 
+void sort_list(Node* head) { //bubble sort
+
+	if (head == NULL) return;
+	if (head->next == NULL)return;
+
+	bool swapped = false;
+	do {
+		swapped = false;
+		Node* current = head;
+		Node* prev = NULL;
+	
+		while(current->next != NULL){
+			prev = current;
+			current = current->next;
+			if (current != NULL) {
+				if (current->value < prev->value) {
+					int temp;
+					temp = prev->value;
+					prev->value = current->value;
+					current->value = temp;
+					swapped = true;
+				}
+			}
+		}
+	
+	} while (swapped);
+}
+
+void delete_dup(Node* head) {
+	if (head == NULL) return;
+	if (head->next == NULL)return;
+
+	Node* current1, * current2, *dup;
+	current1 = head;
+
+	while (current1 != NULL && current1->next != NULL) {
+		current2 = current1;
+		while(current2->next != NULL){
+			if (current1->value == current2->next->value) {
+				dup = current2->next;
+				current2->next = current2->next->next;
+				free(dup);
+			}
+			else current2 = current2->next;
+		}
+		current1 = current1->next;
+	}
+}
+
 void freeList(Node* head)
 {
 	Node* tmp;
@@ -325,6 +374,7 @@ int main() {
 	print_list(list1_head); print_list(list2_head);
 	list1_head = append_list(list1_head, list2_head);
 	list1_head=reverse_list(list1_head);
+	sort_list(list1_head);
 	print_list(list1_head);
 	/*
 	Node a, b, c;
