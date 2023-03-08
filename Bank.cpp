@@ -1,154 +1,159 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include <cstdlib>
-#include <algorithm>
 
 using namespace std;
 
-
-
-//---------------------------------------------------------------------------------------------------------------------------------------------------
-//|  person class is created with a relationship that a person can exist with a bank account but if s/he want tto do it there is an age restriction |
-//---------------------------------------------------------------------------------------------------------------------------------------------------
-
-//bank-->vecor of accounts -> will call the functions of the account class-->a person can have multiple accounts and a person can be an owner of multiple accounts
-
-class bank;
-class account;
-class Person;
-
-class bank {
-
-	private:
-	string name;
-	vector<account> accounts;
-	vector<Person> owners;
-
-	public:
-	bank(string name){
-		this->name = name;
-	}
-
-	void addAccount(account a) {
-		accounts.push_back(a);
-	}
-
-	void addOwner(Person p) {
-		owners.push_back(p);
-	}
-
-	void printAccounts() {
-		for (int i = 0; i < accounts.size(); i++) {
-			cout << accounts[i].getAccountNumber() << endl;
-		}
-	}
-
-	void printOwners() {
-		for (int i = 0; i < owners.size(); i++) {
-			cout << owners[i].getName() << endl;
-		}
-	}
-
-};
-
-class account{
-
-	private:
-	int accountNumber;
-	double balance;
-	vector<Person> owners;
-
-	public:
-		account(int accountNumber, double balance, Person owner){
-		this->accountNumber = accountNumber;
-		this->balance = balance;
-		this->owners.push_back(owner);
-		}
-
-		int getAccountNumber() {
-			return accountNumber;
-		}
-
-		double getBalance() {
-			return balance;
-		}
-
-		vector<Person> getOwner(vector<Person> owners) {
-			return owners;
-		}
-		Person setOwner(Person owner){
-			owners.push_back(owner);
-		}
-
-		void deposit(double amount) {
-			balance += amount;
-		}
-
-		void withdraw(double amount) {
-			balance -= amount;
-		}
-
-};
+class Account; // forward declaration
 
 class Person {
+private:
+    string name;
+    int age;
+    
 
-	private:
-	string name;
-	int age;
-	vector<account> accounts;
+public:
+    vector<Account*> accounts;
+    Person(string name, int age) : name(name), age(age) {}
 
-	public:
-		Person(string name, int age) {
-		this->name = name;
-		this->age = age;
+    string getName() const {
+        return name;
+    }
+
+    int getAge() const {
+        return age;
+    }
+
+    void addAccount(Account* account) {
+        accounts.push_back(account);
+    }
+    /*use of undefined type 'Account'   line 33	
+
+    void printAccounts() const {
+		cout << "Accounts of " << name << ":" << endl;
+        
+        for (const auto& account : accounts) {                   //line 33
+			cout << "  " << account->getNumber() << " (" << account->getBalance() << ")" << endl;
 		}
-
-		string getName(){
-			return name;
-		}
-
-		int getAge(){
-			return age;
-		}
-
-		void addAccount(account a){
-			accounts.push_back(a);
-		}
-
-		void printAccounts() {
-		for (int i = 0; i < accounts.size(); i++) {
-			cout << accounts[i].getAccountNumber() << endl;
-		}
+        
 	}
+    */
+};
 
+class Account {
+private:
+    int number;
+    double balance;
+    vector<Person*> owners;
+
+public:
+    Account(int number, double balance) : number(number), balance(balance) {}
+
+    int getNumber() const {
+        return number;
+    }
+
+    double getBalance() const {
+        return balance;
+    }
+
+    void addOwner(Person* owner) {
+        owners.push_back(owner);
+    }
+
+    vector<Person*> getOwners() const {
+        return owners;
+    }
+
+    void deposit(double amount) {
+        balance += amount;
+    }
+
+    void withdraw(double amount) {
+        balance -= amount;
+    }
+};
+
+class Bank {
+private:
+    string name;
+    vector<Account*> accounts;
+    vector<Person*> customers;
+
+public:
+    Bank(string name) : name(name) {}
+
+    void addAccount(Account* account) {
+        accounts.push_back(account);
+    }
+
+    void addCustomer(Person* customer) {
+        customers.push_back(customer);
+    }
+
+    vector<Account*> getAccounts() const {
+        return accounts;
+    }
+
+    vector<Person*> getCustomers() const {
+        return customers;
+    }
+    void account_of_person() { //different approach, trying to acces the accounts vector through the person class but no to store it directly because it doesnt work.
+        cout << "Accounts of customers:" << endl;
+        for (const auto& customer : customers) {
+            cout << customer->getName() << ":" << endl;
+            for (const auto& account : customer->accounts) {
+                cout << "  " << account->getNumber() << " (" << account->getBalance() << ")" << endl;
+            }
+        }
+    }
+
+    void printAccounts() const {
+        cout << "Avilable accounts of " << name << ":" << endl;
+        for (const auto& account : accounts) {
+            cout << "  " << account->getNumber() << " (" << account->getBalance() << ")" << endl;
+        }
+    }
+
+    void printCustomers() const {
+        cout << "Customers of " << name << ":" << endl;
+        for (const auto& customer : customers) {
+            cout << "  " << customer->getName() << " (" << customer->getAge() << ")" << endl;
+        }
+    }
 };
 
 int main() {
+    // create bank and customers
+    Bank bank("Bank of CPP");
+    Person* john = new Person("John", 25);
+    Person* mary = new Person("Mary", 30);
+    Person* bob = new Person("Bob", 35);
 
-	bank b("Bank of America");
-	Person p1("John", 20);
-	Person p2("Mary", 30);
-	Person p3("Bob", 40);
-	Person p4("Alice", 50);
+    // add customers to bank
+    bank.addCustomer(john);
+    bank.addCustomer(mary);
+    bank.addCustomer(bob);
 
-	account a1(1, 1000, p1);
-	account a2(2, 2000, p2);
-	account a3(3, 3000, p3);
-	account a4(4, 4000, p4);
+    // create accounts and add to bank and customers
+    Account* account1 = new Account(1001, 1000);
+    Account* account2 = new Account(1002, 2000);
+    Account* account3 = new Account(1003, 3000);
+    Account* account4 = new Account(1004, 4000);
 
-	b.addAccount(a1);
-	b.addAccount(a2);
-	b.addAccount(a3);
-	b.addAccount(a4);
+    bank.addAccount(account3);
+    bank.addAccount(account4);
 
-	b.addOwner(p1);
-	b.addOwner(p2);
-	b.addOwner(p3);
-	b.addOwner(p4);
+    account1->addOwner(john);
+    account1->addOwner(mary);
+    john->addAccount(account1);
+    john->addAccount(account2);
+    mary->addAccount(account1);
 
-	b.printAccounts();
-	b.printOwners();
+    bank.printAccounts();
+    bank.printCustomers();
+    cout << "||||||||||||||||||||||||||||||||\n\n";
+    bank.account_of_person();
+    return 0;
 
-	return 0;
 }
