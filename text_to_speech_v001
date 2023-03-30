@@ -1,0 +1,42 @@
+
+#include <iostream>
+#include <string>
+#include <locale>
+#include <codecvt>
+#include <windows.h>
+
+std::wstring stringToWString(const std::string& str) {
+    std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+    return converter.from_bytes(str);
+}
+
+void textToSpeech(const std::string& text) {
+    // Modify the command with desired parameters
+    std::string options = "-v en-us+m3 "; // Set voice to en-us with a male voice variant
+    options += "-s 130 "; // Set speed to 130 words per minute
+    options += "-p 50 "; // Set pitch to 50
+    options += "-a 150 "; // Set amplitude to 150
+    std::wstring location = stringToWString("C:\\Program Files (x86)\\eSpeak\\command_line\\espeak.exe");
+    std::wstring command = stringToWString(options+"\"" + text + "\"");
+    ShellExecute(NULL, L"open", location.c_str(), command.c_str(), NULL, SW_HIDE);
+}
+
+void runUntilEscPressed() {
+    std::string text;
+    std::cout << "Enter the text you want to convert to speech (Press Esc to exit): ";
+    while (true) {
+        
+        std::getline(std::cin, text);
+
+        textToSpeech(text);
+
+        if (GetAsyncKeyState(VK_ESCAPE) & 0x8000) {
+            break;
+        }
+    }
+}
+
+int main() {
+    runUntilEscPressed();
+    return 0;
+}
